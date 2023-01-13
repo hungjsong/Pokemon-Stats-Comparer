@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>CVZ3014 A2</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <link rel="stylesheet" href="./src/radar-chart.css" />
+    <link
+      rel="stylesheet"
+      href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+      integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
+      crossorigin="anonymous"
+    />
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="scripts.js" defer></script>
+    <script type="text/javascript" src="./src/radar-chart.js"></script>
+  </head>
+
+  <body onLoad="loadingStart()">
+    <!-- main title/header -->
+    <div id="main-title">
+      <img id="pokeball-logo" src="img/pokeball.png" />&nbsp;&nbsp;
+      <p id="title">Pokémon Stats Comparer</p>
+    </div>
+    <!-- main content -->
+    <div id="main-content">
+      <!-- data visualization graph -->
+      <div id="main-graph">
+        <div>
+          <img
+            src="./img/pokemon/unknown.png"
+            width="25"
+            height="25"
+            id="sprite1"
+            style="vertical-align: middle"
+          />
+          <p
+            id="graph-title1"
+            class="graph-title"
+            style="display: inline; vertical-align: middle"
+          >
+            Choose a Pokemon
+          </p>
+          <p id="graph-title2" class="graph-title" style="display: none">
+            vs ???
+          </p>
+          <img
+            src="./img/pokemon/unknown.png"
+            width="25"
+            height="25"
+            id="sprite2"
+            style="display: none; vertical-align: middle"
+          />
+        </div>
+        <div id="chart"></div>
+        <div id="legend">
+          <p id="legend-one" style="display: none">
+            <span class="legend-block" id="legend-block-one"></span>
+            <span class="legend-name" id="legend-name-one"></span>
+            <img
+              class="legend-sprite"
+              id="legend-sprite-one"
+              width="15"
+              height="15"
+              style="display: none"
+            />
+            <br /><span class="legend-stats" id="legend-stats-one"></span>
+          </p>
+          <p id="legend-two" style="display: none">
+            <span class="legend-block" id="legend-block-two"></span>
+            <span class="legend-name" id="legend-name-two"></span>
+            <img
+              class="legend-sprite"
+              id="legend-sprite-two"
+              width="15"
+              height="15"
+              style="display: none"
+            />
+            <br /><span class="legend-stats" id="legend-stats-two"></span>
+          </p>
+        </div>
+      </div>
+
+      <!-- main menu -->
+      <div id="main-menu">
+        <div id="options-menu">
+          <div class="view-options-header">
+            <p class="sub-header"><i class="fad fa-eye"></i>View Options</p>
+            <div class="button-wrapper">
+              <button class="grey button" id="reset" onclick="reset('all');">
+                <i class="fas fa-undo-alt"></i>&nbsp;Reset
+              </button>
+            </div>
+          </div>
+          <div class="view-options">
+            <div class="first-radio">
+              <div class="button-wrapper">
+                <button
+                  class="yellow button pressed"
+                  id="view"
+                  name="firstOption"
+                  onclick="displayDropdown(this);"
+                >
+                  View
+                </button>
+              </div>
+            </div>
+            <div class="second-radio">
+              <div class="button-wrapper">
+                <button
+                  class="yellow button"
+                  id="compare"
+                  name="firstOption"
+                  onclick="displayDropdown(this);"
+                >
+                  Compare
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="separator">
+            <hr />
+            <img id="pokeball" src="img/pokeball.png" />
+            <hr />
+          </div>
+          <div class="view-options">
+            <div class="first-radio">
+              <div class="button-wrapper">
+                <button
+                  class="red button pressed"
+                  id="pokemon"
+                  name="secondOption"
+                  onclick="displayDropdown(this);"
+                >
+                  Pokémon
+                </button>
+              </div>
+            </div>
+            <div class="second-radio">
+              <div class="button-wrapper">
+                <button
+                  class="red button"
+                  id="type"
+                  name="secondOption"
+                  onclick="displayDropdown(this);"
+                >
+                  Type
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="dropdown-display">
+          <div id="view-pokemon-dropdown">
+            <div class="search-wrapper">
+              <input
+                type="search"
+                autocomplete="off"
+                id="view-pokemon-search"
+                placeholder="Select Pokémon"
+                onfocus="showList(this)"
+                onblur="hideList(this)"
+                onkeyup="searchPokedex(this)"
+              />
+              <i class="fas fa-caret-up" id="view-pokemon-arrow"></i>
+            </div>
+            <ul id="pokemon-list"></ul>
+          </div>
+          <div id="compare-pokemon-dropdown">
+            <div class="search-wrapper">
+              <input
+                type="search"
+                autocomplete="off"
+                id="compare-pokemon-search-one"
+                placeholder="Select First Pokémon"
+                onfocus="showList(this)"
+                onblur="hideList(this)"
+                onkeyup="searchPokedex(this)"
+              />
+              <i class="fas fa-caret-up" id="compare-pokemon-arrow-one"></i>
+            </div>
+            <ul id="pokemon-list-one"></ul>
+
+            <div class="search-wrapper">
+              <input
+                type="search"
+                autocomplete="off"
+                id="compare-pokemon-search-two"
+                placeholder="Select Second Pokémon"
+                onfocus="showList(this)"
+                onblur="hideList(this)"
+                onkeyup="searchPokedex(this)"
+              />
+              <i class="fas fa-caret-up" id="compare-pokemon-arrow-two"></i>
+            </div>
+            <ul id="pokemon-list-two"></ul>
+          </div>
+          <div id="view-type-dropdown">
+            <div class="search-wrapper">
+              <input
+                type="search"
+                autocomplete="off"
+                id="view-type-search"
+                placeholder="Select Type"
+                onfocus="showList(this)"
+                onblur="hideList(this)"
+                onkeyup="searchPokedex(this)"
+              />
+              <i class="fas fa-caret-up" id="view-type-arrow"></i>
+            </div>
+            <ul id="type-list"></ul>
+          </div>
+          <div id="compare-type-dropdown">
+            <div class="search-wrapper">
+              <input
+                type="search"
+                autocomplete="off"
+                id="compare-type-search-one"
+                placeholder="Select First Type"
+                onfocus="showList(this)"
+                onblur="hideList(this)"
+                onkeyup="searchPokedex(this)"
+              />
+              <i class="fas fa-caret-up" id="compare-type-arrow-one"></i>
+            </div>
+            <ul id="type-list-one"></ul>
+
+            <div class="search-wrapper">
+              <input
+                type="search"
+                autocomplete="off"
+                id="compare-type-search-two"
+                placeholder="Select Second Type"
+                onfocus="showList(this)"
+                onblur="hideList(this)"
+                onkeyup="searchPokedex(this)"
+              />
+              <i class="fas fa-caret-up" id="compare-type-arrow-two"></i>
+            </div>
+            <ul id="type-list-two"></ul>
+          </div>
+        </div>
+        <div id="details">
+          <p class="sub-header"><i class="far fa-info-circle"></i>Details</p>
+          <div id="pokemon-details">
+            <div id="pokemon-detail-one">
+              <img
+                src="./img/types/unknown.png"
+                width="80"
+                height="17.6"
+                id="firstType1"
+              />
+              <img
+                src="./img/types/unknown.png"
+                width="80"
+                height="17.6"
+                id="secondType1"
+                style="display: none"
+              />
+              <p><i class="far fa-bookmark"></i><span>Category</span></p>
+              <span id="category0">???</span>
+              <p><i class="far fa-hashtag"></i><span>Pokédex No.</span></p>
+              <span id="pokedexNumber0">???</span>
+              <p><i class="far fa-tachometer"></i><span>Weight</span></p>
+              <span id="weight0">??? kg</span>
+              <p><i class="far fa-ruler"></i><span>Height</span></p>
+              <span id="height0">??? m</span>
+            </div>
+            <div id="pokemon-detail-two">
+              <img
+                src="./img/types/unknown.png"
+                width="80"
+                height="17.6"
+                id="firstType2"
+              />
+              <img
+                src="./img/types/unknown.png"
+                width="80"
+                height="17.6"
+                id="secondType2"
+                style="display: none"
+              />
+              <p><i class="far fa-bookmark"></i><span>Category</span></p>
+              <span id="category1">???</span>
+              <p><i class="far fa-hashtag"></i><span>Pokédex No.</span></p>
+              <span id="pokedexNumber1">???</span>
+              <p><i class="far fa-tachometer"></i><span>Weight</span></p>
+              <span id="weight1">??? kg</span>
+              <p><i class="far fa-ruler"></i><span>Height</span></p>
+              <span id="height1">??? m</span>
+            </div>
+          </div>
+          <div id="type-details">
+            <div id="type-detail-one">
+              <img
+                src="./img/types/unknown.png"
+                width="150"
+                height="33"
+                id="firstCompareType"
+              />
+              <p><i class="far fa-hashtag"></i><span>No. of Pokémon</span></p>
+              <span id="totalPokemon1">???</span>
+              <p>
+                <i class="far fa-tachometer"></i><span>Average Weight</span>
+              </p>
+              <span id="averageWeight1">??? kg</span>
+              <p><i class="far fa-ruler"></i><span>Average Height</span></p>
+              <span id="averageHeight1">??? m</span>
+            </div>
+            <div id="type-detail-two">
+              <img
+                src="./img/types/unknown.png"
+                width="150"
+                height="33"
+                id="secondCompareType"
+              />
+              <p><i class="far fa-hashtag"></i><span>No. of Pokémon</span></p>
+              <span id="totalPokemon2">???</span>
+              <p>
+                <i class="far fa-tachometer"></i><span>Average Weight</span>
+              </p>
+              <span id="averageWeight2">??? kg</span>
+              <p><i class="far fa-ruler"></i><span>Average Height</span></p>
+              <span id="averageHeight2">??? m</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
